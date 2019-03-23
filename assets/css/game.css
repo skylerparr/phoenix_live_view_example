@@ -1,0 +1,49 @@
+@keyframes idle {
+   from { background-position: 0px 0px; }
+   to { background-position: -384px 0px; }
+}
+
+@keyframes attack1 {
+   from { background-position: 0px -96px; }
+   to { background-position: -384px -96px; }
+}
+
+@keyframes attack2 {
+   from { background-position: 0px -192px; }
+   to { background-position: -384px -192px; }
+}
+
+@keyframes attack3 {
+   from { background-position: 0px -288px; }
+   to { background-position: -384px -288px; }
+}
+
+@keyframes attack4 {
+   from { background-position: 0px -384px; }
+   to { background-position: -384px -384px; }
+}
+
+@keyframes attack5 {
+   from { background-position: 0px -480px; }
+   to { background-position: -384px -480px; }
+}
+
+@keyframes attack6 {
+   from { background-position: 0px -576px; }
+   to { background-position: -384px -576px; }
+}
+
+@keyframes attack7 {
+   from { background-position: 0px -672px; }
+   to { background-position: -384px -672px; }
+}
+
+@keyframes attack8 {
+   from { background-position: 0px -768px; }
+   to { background-position: -384px -768px; }
+}
+
+@keyframes attack9 {
+   from { background-position: 0px -864px; }
+   to { background-position: -384px -864px; }
+}
