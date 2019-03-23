@@ -7,7 +7,8 @@ defmodule Demo.Application do
     children = [
       Demo.Repo,
       DemoWeb.Endpoint,
-      DemoWeb.Presence
+      DemoWeb.Presence,
+      Actors.ActorManager
     ]
 
     opts = [strategy: :one_for_one, name: Demo.Supervisor]
