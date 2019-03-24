@@ -1,49 +1,125 @@
 @keyframes idle {
-   from { background-position: 0px 0px; }
-   to { background-position: -384px 0px; }
+  from { background-position: 0px 0px; }
+  to { background-position: -384px 0px; }
 }
 
 @keyframes attack1 {
-   from { background-position: 0px -96px; }
-   to { background-position: -384px -96px; }
+  from { background-position: 0px -96px; }
+  to { background-position: -384px -96px; }
 }
 
 @keyframes attack2 {
-   from { background-position: 0px -192px; }
-   to { background-position: -384px -192px; }
+  from { background-position: 0px -192px; }
+  to { background-position: -384px -192px; }
 }
 
 @keyframes attack3 {
-   from { background-position: 0px -288px; }
-   to { background-position: -384px -288px; }
+  from { background-position: 0px -288px; }
+  to { background-position: -384px -288px; }
 }
 
 @keyframes attack4 {
-   from { background-position: 0px -384px; }
-   to { background-position: -384px -384px; }
+  from { background-position: 0px -384px; }
+  to { background-position: -384px -384px; }
 }
 
 @keyframes attack5 {
-   from { background-position: 0px -480px; }
-   to { background-position: -384px -480px; }
+  from { background-position: 0px -480px; }
+  to { background-position: -384px -480px; }
 }
 
 @keyframes attack6 {
-   from { background-position: 0px -576px; }
-   to { background-position: -384px -576px; }
+  from { background-position: 0px -576px; }
+  to { background-position: -384px -576px; }
 }
 
 @keyframes attack7 {
-   from { background-position: 0px -672px; }
-   to { background-position: -384px -672px; }
+  from { background-position: 0px -672px; }
+  to { background-position: -384px -672px; }
 }
 
 @keyframes attack8 {
-   from { background-position: 0px -768px; }
-   to { background-position: -384px -768px; }
+  from { background-position: 0px -768px; }
+  to { background-position: -384px -768px; }
 }
 
 @keyframes attack9 {
-   from { background-position: 0px -864px; }
-   to { background-position: -384px -864px; }
+  from { background-position: 0px -864px; }
+  to { background-position: -384px -864px; }
+}
+
+@keyframes dead {
+  from { background-position: 0px -1152px; }
+  to { background-position: -384px -1152px; }
+}
+
+@keyframes center_card {
+  from {top: 0px; left: 0px;}
+  to {top: -300px; left: 536px;}
+}
+
+.hp_bar {
+  border: 1px solid white;
+  width: 80px;
+  height: 10px;
+  left: 16px;
+  position: absolute;
+}
+
+.card {
+  width:128px;
+  height:210px;
+  position:absolute;
+}
+
+.card_center {
+  width:128px;
+  height:210px;
+  position:absolute;
+  top: -300px;
+  left: 536px;
+  animation: center_card 0.5s forwards;
+  animation-timing-function: ease-out;
+}
+
+#player_cards {
+  position: absolute;
+  top: 700px;
+  width: 0px;
+  left: 100px;
+}
+
+.card_title {
+  position: absolute;
+  top: 6px;
+  width: 108px;
+  left: 32px;
+  font-size: 10px;
+  text-align: left;
+  padding: 4px;
+}
+
+.card_description {
+  position: absolute;
+  top: 140px;
+  width: 128px;
+  font-size: 10px;
+  text-align: center;
+  padding: 4px;
+}
+
+.card_type {
+  position: absolute;
+  top: 118px;
+  width: 128px;
+  font-size: 10px;
+  text-align: center;
+}
+
+.card_energy_cost {
+  position: absolute;
+  left: 0px;
+  top: 6px;
+  width: 32px;
+  text-align: center;
 }
