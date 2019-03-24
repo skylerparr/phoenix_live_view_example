@@ -3,6 +3,7 @@ defmodule Actors.BasicActor do
             pose: nil,
             img: nil,
             actor_pid: nil,
+            css_anim_prefix: "",
             imgX: 0,
             imgY: 0,
             team: :right,

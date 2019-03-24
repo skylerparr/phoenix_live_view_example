@@ -19,11 +19,11 @@ defmodule DemoWeb.GameLive do
     <div id="game_container">
       <img src="/images<%= Routes.static_path(DemoWeb.Endpoint, "/terrain.jpg") %>" style="position:absolute"/>
       <div style="position:absolute;left:0px;top:0">
-        <%= for {_id, actor} <- @actors do %>
+        <%= for actor <- @actors do %>
           <div style="left:<%= actor.x %>px;top:<%= actor.y %>px;width:96px;height:96px;overflow:hidden;
                 transform: scaleX(<%= get_direction(actor) %>);
                 position:absolute;background: url('/images<%= Routes.static_path(DemoWeb.Endpoint, actor.img) %>') left top;
-                animation: <%= actor.pose %> 0.4s steps(4) infinite;">
+                animation: <%= actor.css_anim_prefix %><%= actor.pose %> 0.5s steps(4) infinite;">
           </div>
           <div class="hp_bar" style="left:<%= actor.x %>px;top:<%= actor.y %>px;" >
             <div style="width:<%= (actor.hp / actor.max_hp) * 100 %>%; height: 100%; background-color:red;">
@@ -34,7 +34,7 @@ defmodule DemoWeb.GameLive do
     </div>
 
     <div id="player_cards">
-      <%= if(@you.id == GameWorld.get_current_actor_turn().id) do %>
+      <%= if(false) do %>
         <%= for card <- @you.play_pile do %>
           <div style="background: url('/images<%= Routes.static_path(DemoWeb.Endpoint, "/cards/empty.png") %>') no-repeat;"
               class="<%= card.css_class %>"
@@ -47,8 +47,6 @@ defmodule DemoWeb.GameLive do
         <% end %>
       <% end %>
     </div>
-    <a href="#" phx-click="join" style="position:absolute;top:0px;left:0px">join</a>
-    <a href="#" phx-click="start_game" style="position:absolute;top:0px;left:100px">Start Game</a>
     """
   end
 
@@ -117,23 +115,16 @@ defmodule DemoWeb.GameLive do
     }
   end
 
-  def update_screen(socket) do
-    you = Map.get(socket.assigns, :you, %{id: ""})
-
-    actors = ActorManager.all()
-    |> Enum.reduce(%{}, fn(pid, acc) ->
-      actor = BasicActor.get(pid)
-      case actor == nil do
-        true -> acc
-        false -> Map.put(acc, actor.id, actor)
-      end
-    end)
-
-    {_, you} = Enum.find(actors, fn({id, _}) -> you.id == id end) || {"", %{id: ""}}
+  def update_screen(%{assigns: %{life_cycle: %{assigns: assigns}}} = socket) do
+    %{heroes: heroes, enemies: enemies} = assigns
+    actors = heroes ++ enemies
 
     socket
     |> assign(:actors, actors)
-    |> assign(:you, you)
+  end
+
+  def update_screen(socket) do
+    socket
   end
 
   def restart() do
@@ -144,8 +135,8 @@ defmodule DemoWeb.GameLive do
     send(player.session_pid, :choose_hero)
   end
 
-  def start_battle(player) do
-    send(player.session_pid, :start_battle)
+  def start_battle(%{assigns: %{player: player}} = life_cycle) do
+    send(player.session_pid, {:start_battle, life_cycle})
   end
 
   def handle_info(:render, socket) do
@@ -162,73 +153,19 @@ defmodule DemoWeb.GameLive do
     }
   end
 
-  def handle_info(:start_battle, socket) do
+  def handle_info({:start_battle, life_cycle}, socket) do
     Logger.debug("render start battle")
     {
       :noreply,
       socket
       |> assign(:scene, :battle)
+      |> assign(:life_cycle, life_cycle)
       |> update_screen()
     }
   end
 
   def handle_event("on_card_click_" <> id, _, socket) do
     GameWorld.play_card(id)
-    {:noreply, socket}
-  end
-
-  def handle_event("join", _, socket) do
-    template = %CardTemplate{
-      type: :hero,
-      usage_type: :attack,
-      title: "Back Stab",
-      description: "Deal 5 damage to an enemy",
-      image: "",
-      energy_cost: 1,
-      innate: false,
-      exhaust: false,
-      target: :enemy,
-      affects: [{:damage, 5}]
-    }
-
-    cards = [
-      %Card{
-        template: template,
-        id: Ecto.UUID.generate(),
-        energy_cost: template.energy_cost,
-        upgraded: false,
-        affects: template.affects
-      }
-    ]
-
-    actor = %BasicActor{
-      id: Ecto.UUID.generate(),
-      pose: :idle,
-      team: :left,
-      img: apply(Actors, :arianna, []),
-      x: 200,
-      y: 100,
-      gold: 0,
-      hp: 100,
-      max_hp: 100,
-      energy: 3,
-      max_energy: 3,
-      block: 0,
-      play_pile: cards,
-      draw_pile: [],
-      discard_pile: [],
-      exhausted: []
-    }
-    new_actor = ActorManager.create(actor)
-
-    Join.player_join(new_actor)
-
-    actors = socket.assigns.actors
-    actors = Map.put(actors, new_actor.id, new_actor)
-
-    socket = socket
-             |> assign(:actors, actors)
-
     {:noreply, socket}
   end
 

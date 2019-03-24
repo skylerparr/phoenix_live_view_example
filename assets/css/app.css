@@ -6,6 +6,7 @@
 @import "./snake.css";
 @import "./thermostat.css";
 @import "./game.css";
+@import "./lizard.css";
 
 pre{
   padding: 1em;

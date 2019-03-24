@@ -1,0 +1,54 @@
+@keyframes lizard_idle {
+  from { background-position: 0px 0px; }
+  to { background-position: -500px 0px; }
+}
+
+@keyframes lizard_attack1 {
+  from { background-position: 0px -96px; }
+  to { background-position: -500px -96px; }
+}
+
+@keyframes lizard_attack2 {
+  from { background-position: 0px -192px; }
+  to { background-position: -500px -192px; }
+}
+
+@keyframes lizard_attack3 {
+  from { background-position: 0px -288px; }
+  to { background-position: -500px -288px; }
+}
+
+@keyframes lizard_attack4 {
+  from { background-position: 0px -384px; }
+  to { background-position: -500px -384px; }
+}
+
+@keyframes lizard_attack5 {
+  from { background-position: 0px -480px; }
+  to { background-position: -500px -480px; }
+}
+
+@keyframes lizard_attack6 {
+  from { background-position: 0px -576px; }
+  to { background-position: -500px -576px; }
+}
+
+@keyframes lizard_attack7 {
+  from { background-position: 0px -672px; }
+  to { background-position: -500px -672px; }
+}
+
+@keyframes lizard_attack8 {
+  from { background-position: 0px -768px; }
+  to { background-position: -500px -768px; }
+}
+
+@keyframes lizard_attack9 {
+  from { background-position: 0px -864px; }
+  to { background-position: -500px -864px; }
+}
+
+@keyframes lizard_dead {
+  from { background-position: 0px -1152px; }
+  to { background-position: -500px -1152px; }
+}
