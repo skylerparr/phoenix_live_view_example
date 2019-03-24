@@ -8,7 +8,6 @@ defmodule Demo.Application do
       Demo.Repo,
       DemoWeb.Endpoint,
       DemoWeb.Presence,
-      LifeCycle,
       Accounts.PlayerManager,
       Actors.ActorManager,
       Game.GameWorld,

@@ -58,7 +58,9 @@ config :demo, DemoWeb.Endpoint,
   ]
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console, format: "[$level][$metadata] $message\n",
+  metadata: [:pid]
+
 config :logger, level: :debug
 
 # Set a higher stacktrace during development. Avoid configuring such

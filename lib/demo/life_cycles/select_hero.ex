@@ -3,7 +3,8 @@ defmodule LifeCycles.SelectHero do
   use LifeCycle
 
   @impl true
-  def apply(life_cycle) do
+  def apply(%{assigns: %{player: player}} = life_cycle) do
+    DemoWeb.GameLive.choose_hero(player)
     receive do
       {pid, {:select_hero, name}} ->
         %{life_cycle | module: LifeCycles.StartBattle}

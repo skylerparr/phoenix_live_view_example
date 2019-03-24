@@ -5,13 +5,15 @@ defmodule LifeCycles.Welcome do
   @impl true
   def apply(life_cycle) do
     receive do
-      {pid, :mounted} ->
+      {pid, {:mounted, player}} ->
         :timer.sleep(1000)
-        go_to(life_cycle, LifeCycles.SelectHero)
+        life_cycle
+        |> assign(:player, player)
+        |> go_to(LifeCycles.SelectHero)
     end
   end
 
-  def mounted() do
-    notify(:mounted)
+  def mounted(player) do
+    notify(player, {:mounted, player})
   end
 end

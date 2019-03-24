@@ -52,7 +52,7 @@ defmodule DemoWeb.GameLive do
     """
   end
 
-  def render(%{scene: :battle} = assigns) do
+  def render(%{scene: :choose_hero} = assigns) do
     ~L"""
     <h3>Welcome, Choose your hero!</h3>
     <table>
@@ -86,9 +86,24 @@ defmodule DemoWeb.GameLive do
     """
   end
 
-  def mount(session, socket) do
-    PlayerManager.add_player(self(), %Player{id: Ecto.UUID.generate()})
-    LifeCycles.Welcome.mounted()
+  def mount(_session, %{id: id} = socket) do
+    if(PlayerManager.get_player_by_session_id(id) == nil) do
+      {:ok, life_cycle_pid} = LifeCycle.start_link()
+      player = PlayerManager.add_player(self(), %Player{id: Ecto.UUID.generate(), session_id: id, life_cycle_pid: life_cycle_pid})
+    else
+      case PlayerManager.get_player_by_session_pid(self()) do
+        nil ->
+          nil
+        player ->
+          LifeCycle.stop(player.life_cycle_pid)
+          PlayerManager.remove_player(self())
+      end
+      Logger.debug("mounting and starting lifecycle")
+      {:ok, life_cycle_pid} = LifeCycle.start_link()
+      :timer.sleep(10)
+      player = PlayerManager.add_player(self(), %Player{id: Ecto.UUID.generate(), session_id: id, life_cycle_pid: life_cycle_pid})
+      LifeCycles.Welcome.mounted(player)
+    end
 
     case Process.whereis(:game_world) do
       nil -> nil
@@ -125,11 +140,30 @@ defmodule DemoWeb.GameLive do
     ActorManager.restart()
   end
 
+  def choose_hero(player) do
+    send(player.session_pid, :choose_hero)
+  end
+
+  def start_battle(player) do
+    send(player.session_pid, :start_battle)
+  end
+
   def handle_info(:render, socket) do
     {:noreply, socket |> update_screen()}
   end
 
-  def handle_info(:start_battle, _, socket) do
+  def handle_info(:choose_hero, socket) do
+    Logger.debug("render choose hero")
+    {
+      :noreply,
+      socket
+      |> assign(:scene, :choose_hero)
+      |> update_screen()
+    }
+  end
+
+  def handle_info(:start_battle, socket) do
+    Logger.debug("render start battle")
     {
       :noreply,
       socket
@@ -209,10 +243,18 @@ defmodule DemoWeb.GameLive do
     {:noreply, socket}
   end
 
-  def terminate(_, state) do
-    PlayerManager.remove_player(self())
-    {:noreply, state}
-  end
+#  def terminate(_, state) do
+#    Logger.debug("terminating session")
+#    case PlayerManager.get_player_by_session_pid(self()) do
+#      nil ->
+#        nil
+#      player ->
+#        LifeCycle.stop(player.life_cycle_pid)
+#        PlayerManager.remove_player(self())
+#    end
+#
+#    {:noreply, state}
+#  end
 
   def get_direction(actor) do
     case actor.team do
