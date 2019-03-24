@@ -19,6 +19,12 @@ defmodule Actors.ActorManager do
     GenServer.call(__MODULE__, :all)
   end
 
+  def get_team(team) do
+    all()
+    |> Enum.into([], fn(actor_pid) -> BasicActor.get(actor_pid) end)
+    |> Enum.filter(fn(%{team: t}) -> t == team end)
+  end
+
   def restart() do
     all()
     |> Enum.each(fn(actor_pid) ->

@@ -1,4 +1,4 @@
 defmodule LifeCycles.LifeCycleBehaviour do
-  @callback apply(%Game.Card{}) :: :ok
+  @callback apply(%LifeCycle{}) :: %LifeCycle{}
 
 end

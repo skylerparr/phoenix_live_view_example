@@ -58,6 +58,26 @@
   to {top: -300px; left: 536px;}
 }
 
+.choose_character {
+  width: 200px;
+  height: 200px;
+  background-color: blue;
+}
+
+.choose_character_image {
+  height: 180px;
+  padding: 20px;
+}
+
+.choose_character_name {
+  color: black;
+  position: relative;
+  top: -20px;
+  width: 200px;
+  background-color: tan;
+  text-align: center;
+}
+
 .hp_bar {
   border: 1px solid white;
   width: 80px;
