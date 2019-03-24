@@ -7,6 +7,7 @@ defmodule LifeCycles.Welcome do
     receive do
       {pid, {:mounted, player}} ->
         :timer.sleep(1000)
+
         life_cycle
         |> assign(:player, player)
         |> go_to(LifeCycles.SelectHero)

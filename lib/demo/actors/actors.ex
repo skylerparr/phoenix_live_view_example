@@ -3,6 +3,6 @@ defmodule Actors.Actors do
   def jouline(), do: "/free_1/Battlesheet_Free1.png"
   def surge(), do: "/free_8/Battlesheet_Free_8.png"
 
-  #enemies
+  # enemies
   def lizard(), do: "/free_17/Battlesheet_Free_17.png"
 end

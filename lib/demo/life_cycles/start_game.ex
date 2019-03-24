@@ -6,5 +6,4 @@ defmodule LifeCycles.StartGame do
   def apply(life_cycle) do
     %{life_cycle | module: LifeCycles.StartBattle}
   end
-
 end

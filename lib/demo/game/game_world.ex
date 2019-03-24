@@ -14,6 +14,7 @@ defmodule Game.GameWorld do
   def start_link(_) do
     GenServer.start_link(__MODULE__, %__MODULE__{}, name: __MODULE__)
   end
+
   def init(s), do: {:ok, s}
 
   def get_current_actor_turn() do
@@ -31,30 +32,30 @@ defmodule Game.GameWorld do
   end
 
   defp get_card(cards, id) do
-    Enum.find(cards, fn(card) -> card.id == id end)
+    Enum.find(cards, fn card -> card.id == id end)
   end
 
   def apply_card(actor, %Card{template: %{target: :enemy}} = card) do
     card = %{card | css_class: :card_center}
     BasicActor.update_play_pile(actor, card)
   end
+
   def apply_card(actor, %Card{template: %{target: :ally}} = card) do
-
   end
+
   def apply_card(actor, %Card{template: %{target: :card}} = card) do
-
   end
+
   def apply_card(actor, %Card{template: %{target: :self}} = card) do
-
   end
+
   def apply_card(actor, %Card{template: %{target: :all_allies}} = card) do
-
   end
+
   def apply_card(actor, %Card{template: %{target: :all_cards}} = card) do
-
   end
-  def apply_card(actor, %Card{template: %{target: :all_enemies}} = card) do
 
+  def apply_card(actor, %Card{template: %{target: :all_enemies}} = card) do
   end
 
   def handle_call(:get_current_actor_turn, _, state) do
@@ -65,5 +66,4 @@ defmodule Game.GameWorld do
     state = %{state | current_actor_turn: actor}
     {:reply, state.current_actor_turn, state}
   end
-
 end

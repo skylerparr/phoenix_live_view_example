@@ -6,16 +6,24 @@ defmodule LifeCycles.SelectHero do
   alias Game.Card
   alias Game.CardTemplate
   alias Actors.Actors
+  alias DemoWeb.GameLive
 
   @impl true
   def apply(%{assigns: %{player: player}} = life_cycle) do
-    DemoWeb.GameLive.choose_hero(player)
+    GameLive.choose_hero(player)
+
     receive do
       {pid, {:select_hero, name}} ->
         hero = load_hero(player, name)
-        life_cycle = assign(life_cycle, :heroes, [hero])
         enemy = load_enemy(:lizard)
-        life_cycle = assign(life_cycle, :enemies, [enemy])
+
+        life_cycle =
+          life_cycle
+          |> assign(:heroes, [hero])
+          |> assign(:you, hero.id)
+          |> assign(:enemies, [enemy])
+          |> assign(:actor_turn, hero)
+
         %{life_cycle | module: LifeCycles.StartBattle}
     end
   end
@@ -71,6 +79,7 @@ defmodule LifeCycles.SelectHero do
       discard_pile: [],
       exhausted: []
     }
+
     {:ok, actor_pid} = BasicActor.start_link(actor)
     %{actor | actor_pid: actor_pid}
   end
@@ -95,6 +104,7 @@ defmodule LifeCycles.SelectHero do
       discard_pile: [],
       exhausted: []
     }
+
     {:ok, actor_pid} = BasicActor.start_link(actor)
     %{actor | actor_pid: actor_pid}
   end

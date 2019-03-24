@@ -16,12 +16,11 @@ defmodule LifeCycle do
       end
 
       def fetch(life_cycle, key, default \\ nil) do
-        assigns = life_cycle.assigns
-        Map.get(life_cycle, key, default)
+        Map.get(life_cycle.assigns, key, default)
       end
 
       def go_to(life_cycle, module) do
-        Logger.debug("going to module #{inspect module}")
+        Logger.debug("going to module #{inspect(module)}")
         %{life_cycle | module: module}
       end
 
@@ -34,6 +33,7 @@ defmodule LifeCycle do
         case Accounts.PlayerManager.get_player_by_session_pid(self()) do
           nil ->
             raise "player not found"
+
           player ->
             notify(player, payload)
         end
@@ -45,7 +45,7 @@ defmodule LifeCycle do
     Logger.debug("starting lifecycle")
     GenServer.start_link(__MODULE__, %LifeCycle{})
   end
-  
+
   @impl true
   def init(s) do
     Logger.debug("init")
@@ -68,5 +68,4 @@ defmodule LifeCycle do
     Process.send_after(self(), :game_loop, 100)
     {:noreply, state}
   end
-
 end

@@ -24,6 +24,7 @@ defmodule DemoWeb.TopLive do
       {:unix, :darwin} ->
         {top, 0} = System.cmd("top", ["-l", "1"])
         assign(socket, top: top)
+
       {:unix, :linux} ->
         {top, 0} = System.cmd("top", ["-n", "1", "-b"])
         assign(socket, top: top)

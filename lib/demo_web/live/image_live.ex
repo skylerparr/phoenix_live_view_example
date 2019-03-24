@@ -4,6 +4,7 @@ defmodule DemoWeb.ImageLive do
 
   def radio_tag(assigns) do
     assigns = Enum.into(assigns, %{})
+
     ~L"""
     <input type="radio" name="<%= @name %>" value="<%= @value %>"
       <%= if @value == @checked, do: "checked" %> />

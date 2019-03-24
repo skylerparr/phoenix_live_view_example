@@ -9,5 +9,4 @@ defmodule LifeCycles.StartBattle do
     GameLive.start_battle(life_cycle)
     %{life_cycle | module: LifeCycles.PlayerTurn}
   end
-
 end

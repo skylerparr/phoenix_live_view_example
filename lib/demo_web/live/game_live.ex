@@ -11,6 +11,7 @@ defmodule DemoWeb.GameLive do
   alias Accounts.PlayerManager
   alias Accounts.Player
   alias LifeCycles.SelectHero
+  alias LifeCycles.PlayerTurn
 
   require Logger
 
@@ -19,7 +20,7 @@ defmodule DemoWeb.GameLive do
     <div id="game_container">
       <img src="/images<%= Routes.static_path(DemoWeb.Endpoint, "/terrain.jpg") %>" style="position:absolute"/>
       <div style="position:absolute;left:0px;top:0">
-        <%= for actor <- @actors do %>
+        <%= for actor <- @life_cycle.assigns.heroes ++ @life_cycle.assigns.enemies do %>
           <div style="left:<%= actor.x %>px;top:<%= actor.y %>px;width:96px;height:96px;overflow:hidden;
                 transform: scaleX(<%= get_direction(actor) %>);
                 position:absolute;background: url('/images<%= Routes.static_path(DemoWeb.Endpoint, actor.img) %>') left top;
@@ -34,10 +35,14 @@ defmodule DemoWeb.GameLive do
     </div>
 
     <div id="player_cards">
-      <%= if(false) do %>
-        <%= for card <- @you.play_pile do %>
+      <%= if(@life_cycle.assigns.actor_turn && @life_cycle.assigns.you == @life_cycle.assigns.actor_turn.id) do %>
+        <%= for card <- @life_cycle.assigns.actor_turn.play_pile do %>
           <div style="background: url('/images<%= Routes.static_path(DemoWeb.Endpoint, "/cards/empty.png") %>') no-repeat;"
-              class="<%= card.css_class %>"
+              class="<%=
+                case card == Map.get(@life_cycle.assigns, :card_chosen) do
+                  true -> :card_center
+                  false -> :card
+                end %>"
               phx-click="on_card_click_<%= card.id %>">
             <p class="card_energy_cost"><%= card.energy_cost %></p>
             <p class="card_title"><%= card.template.title %></p>
@@ -87,19 +92,40 @@ defmodule DemoWeb.GameLive do
   def mount(_session, %{id: id} = socket) do
     if(PlayerManager.get_player_by_session_id(id) == nil) do
       {:ok, life_cycle_pid} = LifeCycle.start_link()
-      player = PlayerManager.add_player(self(), %Player{id: Ecto.UUID.generate(), session_id: id, life_cycle_pid: life_cycle_pid})
+
+      player =
+        PlayerManager.add_player(
+          self(),
+          %Player{
+            id: Ecto.UUID.generate(),
+            session_id: id,
+            life_cycle_pid: life_cycle_pid
+          }
+        )
     else
       case PlayerManager.get_player_by_session_pid(self()) do
         nil ->
           nil
+
         player ->
           LifeCycle.stop(player.life_cycle_pid)
           PlayerManager.remove_player(self())
       end
+
       Logger.debug("mounting and starting lifecycle")
       {:ok, life_cycle_pid} = LifeCycle.start_link()
       :timer.sleep(10)
-      player = PlayerManager.add_player(self(), %Player{id: Ecto.UUID.generate(), session_id: id, life_cycle_pid: life_cycle_pid})
+
+      player =
+        PlayerManager.add_player(
+          self(),
+          %Player{
+            id: Ecto.UUID.generate(),
+            session_id: id,
+            life_cycle_pid: life_cycle_pid
+          }
+        )
+
       LifeCycles.Welcome.mounted(player)
     end
 
@@ -107,7 +133,9 @@ defmodule DemoWeb.GameLive do
       nil -> nil
       _pid -> Process.unregister(:game_world)
     end
+
     Process.register(self(), :game_world)
+
     {
       :ok,
       socket
@@ -115,12 +143,17 @@ defmodule DemoWeb.GameLive do
     }
   end
 
-  def update_screen(%{assigns: %{life_cycle: %{assigns: assigns}}} = socket) do
-    %{heroes: heroes, enemies: enemies} = assigns
-    actors = heroes ++ enemies
+  def update_screen(
+        %{
+          assigns: %{
+            life_cycle: life_cycle
+          }
+        } = socket
+      ) do
+    %{heroes: heroes, enemies: enemies} = life_cycle.assigns
 
     socket
-    |> assign(:actors, actors)
+    |> assign(:life_cycle, life_cycle)
   end
 
   def update_screen(socket) do
@@ -135,16 +168,48 @@ defmodule DemoWeb.GameLive do
     send(player.session_pid, :choose_hero)
   end
 
-  def start_battle(%{assigns: %{player: player}} = life_cycle) do
+  def start_battle(
+        %{
+          assigns: %{
+            player: player
+          }
+        } = life_cycle
+      ) do
     send(player.session_pid, {:start_battle, life_cycle})
   end
 
+  def choose_card(
+        %{
+          assigns: %{
+            player: player
+          }
+        } = life_cycle
+      ) do
+    send(player.session_pid, {:choose_card, life_cycle})
+    life_cycle
+  end
+
+  def pick_enemy_target(
+        %{
+          assigns: %{
+            player: player
+          }
+        } = life_cycle
+      ) do
+    send(player.session_pid, {:pick_enemy_target, life_cycle})
+  end
+
   def handle_info(:render, socket) do
-    {:noreply, socket |> update_screen()}
+    {
+      :noreply,
+      socket
+      |> update_screen()
+    }
   end
 
   def handle_info(:choose_hero, socket) do
     Logger.debug("render choose hero")
+
     {
       :noreply,
       socket
@@ -155,6 +220,7 @@ defmodule DemoWeb.GameLive do
 
   def handle_info({:start_battle, life_cycle}, socket) do
     Logger.debug("render start battle")
+
     {
       :noreply,
       socket
@@ -164,14 +230,22 @@ defmodule DemoWeb.GameLive do
     }
   end
 
-  def handle_event("on_card_click_" <> id, _, socket) do
-    GameWorld.play_card(id)
-    {:noreply, socket}
+  def handle_info({:choose_card, life_cycle}, socket) do
+    {
+      :noreply,
+      socket
+      |> assign(:life_cycle, life_cycle)
+      |> update_screen()
+    }
   end
 
-  def handle_event("start_game", _, socket) do
-    LifeCycles.Join.start_game()
-    {:noreply, socket}
+  def handle_info({:pick_enemy_target, life_cycle}, socket) do
+    {
+      :noreply,
+      socket
+      |> assign(:life_cycle, life_cycle)
+      |> update_screen()
+    }
   end
 
   def handle_event("select_hero_" <> hero_name, _, socket) do
@@ -180,18 +254,46 @@ defmodule DemoWeb.GameLive do
     {:noreply, socket}
   end
 
-#  def terminate(_, state) do
-#    Logger.debug("terminating session")
-#    case PlayerManager.get_player_by_session_pid(self()) do
-#      nil ->
-#        nil
-#      player ->
-#        LifeCycle.stop(player.life_cycle_pid)
-#        PlayerManager.remove_player(self())
-#    end
-#
-#    {:noreply, state}
-#  end
+  def handle_event(
+        "on_card_click_" <> id,
+        _,
+        %{
+          assigns: %{
+            life_cycle: %{
+              assigns: assigns
+            } = life_cycle
+          }
+        } = socket
+      ) do
+    actor_turn = assigns.actor_turn
+    card = actor_turn.discard_pile ++ actor_turn.play_pile ++ actor_turn.draw_pile
+           |> List.flatten
+           |> Enum.find(fn (%{id: card_id}) -> card_id == id end)
+    PlayerTurn.card_chosen(card)
+
+    assigns = Map.put(assigns, :card_chosen, card)
+    life_cycle = Map.put(life_cycle, :assigns, assigns)
+
+    {
+      :noreply,
+      socket
+      |> assign(life_cycle: life_cycle)
+      |> update_screen()
+    }
+  end
+
+  #  def terminate(_, state) do
+  #    Logger.debug("terminating session")
+  #    case PlayerManager.get_player_by_session_pid(self()) do
+  #      nil ->
+  #        nil
+  #      player ->
+  #        LifeCycle.stop(player.life_cycle_pid)
+  #        PlayerManager.remove_player(self())
+  #    end
+  #
+  #    {:noreply, state}
+  #  end
 
   def get_direction(actor) do
     case actor.team do

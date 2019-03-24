@@ -10,6 +10,7 @@ defmodule LifeCycles.Join do
         players = fetch(life_cycle, :players, [])
         players = [actor | players]
         assign(life_cycle, :players, players)
+
       {pid, :start_game} ->
         %{life_cycle | module: LifeCycles.SelectHero}
     end
@@ -22,5 +23,4 @@ defmodule LifeCycles.Join do
   def start_game() do
     notify(:start_game)
   end
-
 end

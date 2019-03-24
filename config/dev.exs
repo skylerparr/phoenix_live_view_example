@@ -53,12 +53,13 @@ config :demo, DemoWeb.Endpoint,
       ~r{priv/gettext/.*(po)$},
       ~r{lib/demo_web/views/.*(ex)$},
       ~r{lib/demo_web/templates/.*(eex)$},
-      ~r{lib/demo_web/live/.*(ex)$},
+      ~r{lib/demo_web/live/.*(ex)$}
     ]
   ]
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level][$metadata] $message\n",
+config :logger, :console,
+  format: "[$level][$metadata] $message\n",
   metadata: [:pid]
 
 config :logger, level: :debug

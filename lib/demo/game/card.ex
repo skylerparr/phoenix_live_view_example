@@ -4,6 +4,5 @@ defmodule Game.Card do
             energy_cost: 0,
             upgraded: false,
             affected: [],
-            affects: [],
-            css_class: :card
+            affects: []
 end

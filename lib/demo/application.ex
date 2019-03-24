@@ -10,7 +10,7 @@ defmodule Demo.Application do
       DemoWeb.Presence,
       Accounts.PlayerManager,
       Actors.ActorManager,
-      Game.GameWorld,
+      Game.GameWorld
     ]
 
     opts = [strategy: :one_for_one, name: Demo.Supervisor]

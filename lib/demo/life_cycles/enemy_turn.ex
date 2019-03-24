@@ -5,7 +5,6 @@ defmodule LifeCycles.EnemyTurn do
   @impl true
   def apply(life_cycle) do
     receive do
-    
     end
   end
 end

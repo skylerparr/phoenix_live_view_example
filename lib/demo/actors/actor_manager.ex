@@ -7,6 +7,7 @@ defmodule Actors.ActorManager do
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
+
   def init(state), do: {:ok, state}
 
   def create(actor) do
@@ -21,15 +22,16 @@ defmodule Actors.ActorManager do
 
   def get_team(team) do
     all()
-    |> Enum.into([], fn(actor_pid) -> BasicActor.get(actor_pid) end)
-    |> Enum.filter(fn(%{team: t}) -> t == team end)
+    |> Enum.into([], fn actor_pid -> BasicActor.get(actor_pid) end)
+    |> Enum.filter(fn %{team: t} -> t == team end)
   end
 
   def restart() do
     all()
-    |> Enum.each(fn(actor_pid) ->
+    |> Enum.each(fn actor_pid ->
       GenServer.stop(actor_pid)
     end)
+
     GenServer.call(__MODULE__, :restart)
     send(Game.GameWorld.get_game_world(), :render)
   end
@@ -40,7 +42,7 @@ defmodule Actors.ActorManager do
 
   def killall() do
     all()
-    |> Enum.each(fn(actor_pid) ->
+    |> Enum.each(fn actor_pid ->
       kill(actor_pid)
     end)
   end
@@ -61,5 +63,4 @@ defmodule Actors.ActorManager do
   def handle_call(:restart, _, _) do
     {:reply, [], []}
   end
-
 end

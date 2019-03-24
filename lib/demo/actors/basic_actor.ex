@@ -50,7 +50,7 @@ defmodule Actors.BasicActor do
   end
 
   def update_play_pile(%{play_pile: play_pile, actor_pid: actor_pid} = actor, card) do
-    card_to_delete = Enum.find(play_pile, fn(%{id: id}) -> id == card.id end)
+    card_to_delete = Enum.find(play_pile, fn %{id: id} -> id == card.id end)
     play_pile = List.delete(play_pile, card_to_delete)
     play_pile = [card | play_pile]
     actor = %{actor | play_pile: play_pile}
@@ -88,5 +88,4 @@ defmodule Actors.BasicActor do
   def terminate(:normal, _state) do
     :ok
   end
-
 end

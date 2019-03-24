@@ -20,21 +20,21 @@ defmodule DemoWeb.Router do
 
     get "/", PageController, :index
 
-    live "/game", GameLive
-    live "/thermostat", ThermostatLive
+    live("/game", GameLive)
+    live("/thermostat", ThermostatLive)
     get "/snake", PageController, :snake
-    live "/search", SearchLive
-    live "/clock", ClockLive
-    live "/image", ImageLive
-    live "/pacman", PacmanLive
-    live "/rainbow", RainbowLive
-    live "/counter", CounterLive
-    live "/top", TopLive
-    live "/presence_users/:name", UserLive.PresenceIndex
-    live "/users", UserLive.Index
-    live "/users/new", UserLive.New
-    live "/users/:id", UserLive.Show
-    live "/users/:id/edit", UserLive.Edit
+    live("/search", SearchLive)
+    live("/clock", ClockLive)
+    live("/image", ImageLive)
+    live("/pacman", PacmanLive)
+    live("/rainbow", RainbowLive)
+    live("/counter", CounterLive)
+    live("/top", TopLive)
+    live("/presence_users/:name", UserLive.PresenceIndex)
+    live("/users", UserLive.Index)
+    live("/users/new", UserLive.New)
+    live("/users/:id", UserLive.Show)
+    live("/users/:id/edit", UserLive.Edit)
 
     resources "/plain/users", UserController
   end
